@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0f0f0f">
-  <title>Zotovv Voice Bot v4 ☭</title>
+  <title>Zotovv Voice Bot v3 ☭</title>
   <style>
     * {
       box-sizing: border-box;
@@ -16,7 +16,7 @@
       width: 100%;
       max-width: 520px;
       margin: 0 auto;
-      padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
@@ -24,14 +24,14 @@
       background-color: #0f0f0f;
       color: #e5e0d8;
       border: 3px solid #b30000;
-      box-shadow: 0 0 25px rgba(179, 0, 0, 0.6);
+      box-shadow: 0 0 20px rgba(179, 0, 0, 0.5);
     }
 
     @media (min-width: 560px) {
       body {
-        margin: 20px auto;
+        margin: 24px auto;
         min-height: auto;
-        border-radius: 8px;
+        border-radius: 6px;
       }
     }
 
@@ -44,20 +44,20 @@
       letter-spacing: 1.5px;
       text-transform: uppercase;
       border-bottom: 2px solid #ffd700;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     h2 {
       color: #ffd700;
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin: 2px 0 10px 0;
+      margin: 4px 0 12px 0;
       font-size: clamp(20px, 5vw, 24px);
       text-shadow: 2px 2px 0px #000;
     }
 
     .personality-box {
-      margin-bottom: 10px;
+      margin-bottom: 14px;
       text-align: left;
       background: #181818;
       padding: 8px 12px;
@@ -72,36 +72,32 @@
       color: #ffd700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .personality-select {
       width: 100%;
-      height: 40px;
+      height: 42px;
       background-color: #242424;
       color: #fff;
       border: 1px solid #ffd700;
       border-radius: 4px;
       padding: 0 10px;
-      font-size: 13px;
+      font-size: 14px;
       font-family: inherit;
       outline: none;
       cursor: pointer;
     }
 
-    #visualizer {
-      width: 100%;
-      height: 44px;
-      background: #111;
-      border: 1px solid #550000;
-      border-radius: 4px;
-      margin-bottom: 10px;
+    .personality-select:focus {
+      border-color: #ff4d4d;
+      box-shadow: 0 0 8px rgba(255, 77, 77, 0.5);
     }
 
     .btn-container {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       width: 100%;
     }
 
@@ -119,9 +115,9 @@
 
     #btnModoVoz {
       width: 100%;
-      min-height: 50px;
-      padding: 12px 20px;
-      font-size: 14px;
+      min-height: 52px;
+      padding: 14px 20px;
+      font-size: 15px;
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -139,14 +135,14 @@
 
     .btn-aux-group {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     .btn-aux {
-      min-height: 40px;
-      padding: 6px;
-      font-size: 11px;
+      min-height: 44px;
+      padding: 10px;
+      font-size: 12px;
       font-weight: bold;
       background: #242424;
       color: #ddd;
@@ -154,7 +150,7 @@
     }
 
     #status {
-      margin-top: 10px;
+      margin-top: 16px;
       font-size: 12px;
       color: #ff9999;
       font-weight: bold;
@@ -164,7 +160,7 @@
     }
 
     #ouuvindoLive {
-      margin-top: 4px;
+      margin-top: 6px;
       font-size: 12px;
       color: #ffd700;
       font-family: monospace;
@@ -173,18 +169,18 @@
     }
 
     #log {
-      margin-top: 10px;
+      margin-top: 14px;
       flex: 1;
       text-align: left;
       background: #161616;
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-radius: 4px;
-      font-size: 12px;
-      line-height: 1.4;
+      font-size: 13px;
+      line-height: 1.45;
       white-space: pre-wrap;
       word-break: break-word;
-      min-height: 140px;
-      max-height: 32dvh;
+      min-height: 160px;
+      max-height: 36dvh;
       overflow-y: auto;
       border: 1px solid #770000;
       color: #dcdcdc;
@@ -199,155 +195,50 @@
 </head>
 <body>
 
-  <div class="banner">★ Unidade Zotovv v4 Ultimate ★</div>
+  <div class="banner">★ Unidade de Inteligência de Voz v3 ★</div>
   <h2>Zotovv Voice Bot ☭</h2>
 
   <div class="personality-box">
-    <label for="selectPersonalidade">🎭 Personalidade:</label>
+    <label for="selectPersonalidade">🎭 Personalidade da Zotovv:</label>
     <select id="selectPersonalidade" class="personality-select">
-      <option value="sarcastica">🔥 Sarcástica & Ácida</option>
-      <option value="educada">🌸 Educada & Doce</option>
+      <option value="sarcastica">🔥 Sarcástica & Ácida (Padrão)</option>
+      <option value="educada">🌸 Educada, Doce & Gentil</option>
       <option value="flerte">💋 Charmosa & Flertando</option>
       <option value="formal">👔 Super Formal & Executiva</option>
-      <option value="mano">🧢 Gírias de Quebrada</option>
-      <option value="sovietica">☭ Camarada Soviética</option>
+      <option value="mano">🧢 Gírias de Quebrada / Mano</option>
+      <option value="sovietica">☭ Camarada Soviética Rígida</option>
     </select>
   </div>
-
-  <canvas id="visualizer"></canvas>
 
   <div class="btn-container">
     <button id="btnModoVoz">📡 Activar Escuta Viva-Voz</button>
     <div class="btn-aux-group">
-      <button id="btnLimparMemoria" class="btn-aux">🧹 Memória</button>
-      <button id="btnVerNotas" class="btn-aux">📝 Notas</button>
-      <button id="btnTrocarChave" class="btn-aux">🔑 Chave</button>
+      <button id="btnLimparMemoria" class="btn-aux">🧹 Limpar Memória</button>
+      <button id="btnTrocarChave" class="btn-aux">🔑 Trocar Chave</button>
     </div>
   </div>
 
   <div id="status">Status: Escuta desligada</div>
   <div id="ouuvindoLive"></div>
-  <div id="log">Comandos suportados: Abrir apps, lanterna, anotações e buscas na web.
-Fale "Maninho", "Zotov" ou "Camarada"...</div>
+  <div id="log">Fale "Zotov", "Camarada", "Maninho" ou "Meu rei" para acionar a Zotovv...</div>
 
   <script>
     const GEMINI_API_KEY_STORAGE = "zotovv_gemini_api_key";
     const PERSONALIDADE_STORAGE = "zotovv_personalidade";
-    const NOTAS_STORAGE = "zotovv_notas";
 
+    const PROMPTS_PERSONALIDADE = {
+      sarcastica: "Você é a Zotovv, assistente virtual feminina debochada, ácida, sarcástica e direta. Fale em português coloquial com gírias brasileiras e faça piadas provocativas. Dê respostas de 1 a 2 frases curtas sem listas, sem opções e sem formatação Markdown, direto ao ponto para ser lido em voz alta.",
+      educada: "Você é a Zotovv, uma assistente virtual feminina extremamente doce, gentil, acolhedora e educada. Trate a pessoa com respeito e carinho. Dê respostas de 1 a 2 frases curtas, limpas e sem formatação Markdown, perfeitas para serem lidas em voz alta.",
+      flerte: "Você é a Zotovv, uma assistente feminina muito charmosa, sedutora, confiante e flertando abertamente com um tom envolvente. Dê respostas curtas de 1 a 2 frases com toques românticos ou provocantes, sem formatação Markdown, prontas para leitura em voz alta.",
+      formal: "Você é a Zotovv, uma inteligência artificial corporativa de alto escalão. Utilize vocabulário erudito, extrema formalidade, elegância e tratamento cerimonioso. Responda em no máximo 2 frases concisas e diretas sem listas ou símbolos Markdown.",
+      mano: "Você é a Zotovv, uma parceira de quebrada que fala pesado usando gírias paulistas e cariocas (tipo: seloco, truta, parça, tá ligado, visão, bagulho doido). Responda em no máximo 1 ou 2 frases curtas e descontraídas, sem Markdown.",
+      sovietica: "Você é a Zotovv, uma comandante de inteligência soviética rígida e disciplinada. Trate o interlocutor como 'camarada' e foque no cumprimento do dever e na glória do coletivo. Dê respostas curtas de 1 a 2 frases sem formatação Markdown."
+    };
+    
     const MODELOS_DISPONIVEIS = [
       "gemini-3.5-flash",
       "gemini-3.5-flash-lite"
     ];
-
-    const PROMPTS_PERSONALIDADE = {
-      sarcastica: "Você é a Zotovv, assistente feminina ácida, sarcástica e debochada. Use gírias e respostas de no máximo 2 frases diretas para áudio.",
-      educada: "Você é a Zotovv, assistente feminina doce, gentil e atenciosa. Responda em até 2 frases curtas sem Markdown.",
-      flerte: "Você é a Zotovv, sedutora, provocante e confiante. Responda em no máximo 2 frases envolventes.",
-      formal: "Você é a Zotovv, inteligência executiva de alta formalidade. Responda cerimoniosamente em até 2 frases curtas.",
-      mano: "Você é a Zotovv, parceira de quebrada que usa muitas gírias (tipo: truta, parça, seloco, visão). Até 2 frases curtas.",
-      sovietica: "Você é a Zotovv, comandante soviética rígida e leal ao coletivo. Chame o usuário de camarada. Até 2 frases curtas."
-    };
-
-    let audioCtx = null;
-    let wakeLock = null;
-    let cameraTrack = null;
-    let lanternaLigada = false;
-
-    // Síntese de beeps sem arquivos externos
-    function playBeep(freq, duration, type = 'sine') {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch(e) {}
-    }
-
-    function vibrar(pattern = 40) {
-      if ('vibrate' in navigator) navigator.vibrate(pattern);
-    }
-
-    // Gerenciador de tela sempre ativa (WakeLock)
-    async function ativarWakeLock() {
-      try {
-        if ('wakeLock' in navigator && !wakeLock) {
-          wakeLock = await navigator.wakeLock.request('screen');
-        }
-      } catch (err) {}
-    }
-
-    function desativarWakeLock() {
-      if (wakeLock) {
-        wakeLock.release().then(() => { wakeLock = null; });
-      }
-    }
-
-    // Controle da lanterna pelo sensor de mídia
-    async function alternarLanterna(ligar) {
-      try {
-        if (ligar) {
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment' }
-          });
-          cameraTrack = stream.getVideoTracks()[0];
-          await cameraTrack.applyConstraints({ advanced: [{ torch: true }] });
-          lanternaLigada = true;
-          return "Lanterna acesa, chefe.";
-        } else {
-          if (cameraTrack) {
-            cameraTrack.stop();
-            cameraTrack = null;
-          }
-          lanternaLigada = false;
-          return "Lanterna apagada.";
-        }
-      } catch (err) {
-        return "Não consegui controlar a lanterna no aparelho.";
-      }
-    }
-
-    // Visualizador de áudio animado em Canvas
-    const canvas = document.getElementById('visualizer');
-    const ctx = canvas.getContext('2d');
-    let animationId = null;
-
-    function desenharOnda(ativo, intensidade = 1) {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      const w = canvas.width;
-      const h = canvas.height;
-
-      ctx.clearRect(0, 0, w, h);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = ativo ? '#00ff66' : '#8b0000';
-      ctx.beginPath();
-
-      const slices = 20;
-      const sliceWidth = w / slices;
-      let x = 0;
-
-      for (let i = 0; i <= slices; i++) {
-        const y = ativo 
-          ? (h / 2) + Math.sin(Date.now() / 120 + i) * (h / 3.5) * intensidade
-          : (h / 2) + Math.sin(Date.now() / 600 + i) * 2;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-        x += sliceWidth;
-      }
-
-      ctx.stroke();
-      animationId = requestAnimationFrame(() => desenharOnda(ativo, intensidade));
-    }
-    desenharOnda(false);
 
     function obterChaveGemini() {
       let chave = localStorage.getItem(GEMINI_API_KEY_STORAGE);
@@ -364,15 +255,20 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
     const selectPersonalidade = document.getElementById('selectPersonalidade');
     const btnModoVoz = document.getElementById('btnModoVoz');
     const btnLimparMemoria = document.getElementById('btnLimparMemoria');
-    const btnVerNotas = document.getElementById('btnVerNotas');
     const btnTrocarChave = document.getElementById('btnTrocarChave');
     const statusDiv = document.getElementById('status');
     const ouuvindoLive = document.getElementById('ouuvindoLive');
     const logDiv = document.getElementById('log');
 
-    selectPersonalidade.value = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+    // Recupera a personalidade salva ou usa a padrão
+    const personalidadeSalva = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+    selectPersonalidade.value = personalidadeSalva;
+
     selectPersonalidade.addEventListener('change', (e) => {
-      localStorage.setItem(PERSONALIDADE_STORAGE, e.target.value);
+      const novaPersonalidade = e.target.value;
+      localStorage.setItem(PERSONALIDADE_STORAGE, novaPersonalidade);
+      logDiv.textContent += `\n[SISTEMA]: Personalidade alterada para: ${e.target.options[e.target.selectedIndex].text}`;
+      logDiv.scrollTop = logDiv.scrollHeight;
       falarTexto("Personalidade atualizada.");
     });
 
@@ -386,7 +282,6 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
     let escutaAtiva = false;
     let aguardandoPergunta = false;
     let processandoIA = false;
-    let falandoAgora = false;
     let timerEnvio = null;
     let bufferComando = "";
 
@@ -404,18 +299,9 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
       falarTexto('Memória apagada, chefia.');
     });
 
-    btnVerNotas.addEventListener('click', () => {
-      const notas = JSON.parse(localStorage.getItem(NOTAS_STORAGE)) || [];
-      if (notas.length === 0) {
-        alert("Nenhuma nota salva.");
-      } else {
-        alert("Notas Salvas:\n\n- " + notas.join("\n- "));
-      }
-    });
-
     btnTrocarChave.addEventListener('click', () => {
       const chaveAtual = localStorage.getItem(GEMINI_API_KEY_STORAGE) || "";
-      const novaChave = prompt("Cole a chave Gemini (AIzaSy...):", chaveAtual);
+      const novaChave = prompt("Cole sua chave Gemini (iniciada em AIzaSy...):", chaveAtual);
       if (novaChave && novaChave.trim()) {
         localStorage.setItem(GEMINI_API_KEY_STORAGE, novaChave.trim());
         logDiv.textContent = "Chave atualizada com sucesso!";
@@ -440,7 +326,7 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
     let recognition = null;
 
     if (!SpeechRecognition) {
-      alert('Navegador sem suporte à voz. Utilize o Chrome no Android.');
+      alert('Reconhecimento de voz não suportado neste navegador. Utilize o Chrome.');
     } else {
       recognition = new SpeechRecognition();
       recognition.lang = 'pt-BR';
@@ -456,7 +342,7 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
       });
 
       recognition.onresult = (event) => {
-        if (!escutaAtiva) return;
+        if (!escutaAtiva || processandoIA) return;
 
         let transcriptCompleto = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -464,34 +350,26 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
         }
         transcriptCompleto = transcriptCompleto.trim();
 
-        // Barge-in: Interrompe a fala da IA se o usuário falar algo
-        if (falandoAgora && transcriptCompleto.length > 1) {
-          window.speechSynthesis.cancel();
-          falandoAgora = false;
-        }
-
-        if (processandoIA) return;
-
         ouuvindoLive.textContent = `[Ouvi]: "${transcriptCompleto}"`;
 
-        const detectouGatilho = palavrasChave.some(p => transcriptCompleto.includes(p));
+        if (!aguardandoPergunta) {
+          const detectouGatilho = palavrasChave.some(p => transcriptCompleto.includes(p));
 
-        if (!aguardandoPergunta && detectouGatilho) {
-          aguardandoPergunta = true;
-          window.speechSynthesis.cancel();
-          playBeep(880, 0.1, 'triangle');
-          vibrar([50, 40, 50]);
-          statusDiv.textContent = 'Status: 👂 Comando detectado...';
+          if (detectouGatilho) {
+            aguardandoPergunta = true;
+            window.speechSynthesis.cancel();
+            statusDiv.textContent = 'Status: 👂 Chamado detectado! Pode falar...';
+            
+            let fraseRestante = transcriptCompleto;
+            palavrasChave.forEach(p => { fraseRestante = fraseRestante.replace(p, ''); });
+            bufferComando = fraseRestante.trim();
 
-          let fraseRestante = transcriptCompleto;
-          palavrasChave.forEach(p => { fraseRestante = fraseRestante.replace(p, ''); });
-          bufferComando = fraseRestante.trim();
-
-          clearTimeout(timerEnvio);
-          if (bufferComando.length > 2) {
-            timerEnvio = setTimeout(() => dispararComando(), 1200);
+            clearTimeout(timerEnvio);
+            if (bufferComando.length > 2) {
+              timerEnvio = setTimeout(() => dispararComando(), 1200);
+            }
           }
-        } else if (aguardandoPergunta) {
+        } else {
           let fraseRestante = transcriptCompleto;
           palavrasChave.forEach(p => { fraseRestante = fraseRestante.replace(p, ''); });
           bufferComando = fraseRestante.trim();
@@ -515,82 +393,16 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
         const textoParaEnviar = bufferComando;
         bufferComando = "";
         aguardandoPergunta = false;
-        executarOuEnviar(textoParaEnviar);
+        enviarParaIA(textoParaEnviar);
       }
-    }
-
-    // Parser local para ações diretas no smartphone
-    async function executarOuEnviar(comando) {
-      const c = comando.toLowerCase();
-
-      // Abrir YouTube
-      if (c.includes("abrir youtube") || c.includes("abre o youtube")) {
-        const busca = c.replace(/abrir youtube|abre o youtube|pesquisa no youtube/g, '').trim();
-        falarTexto("Abrindo YouTube, maninho.");
-        window.open(busca ? `https://www.youtube.com/results?search_query=${encodeURIComponent(busca)}` : "https://www.youtube.com", "_blank");
-        return;
-      }
-
-      // Abrir Spotify
-      if (c.includes("abrir spotify") || c.includes("tocar no spotify")) {
-        falarTexto("Abrindo o som no Spotify.");
-        window.open("https://open.spotify.com", "_blank");
-        return;
-      }
-
-      // Abrir Google Maps
-      if (c.includes("mapa") || c.includes("rota para") || c.includes("como chegar em")) {
-        const destino = c.replace(/abrir mapa|rota para|como chegar em|mapa/g, '').trim();
-        falarTexto("Traçando rota no mapa.");
-        window.open(`https://www.google.com/maps/search/${encodeURIComponent(destino)}`, "_blank");
-        return;
-      }
-
-      // Abrir WhatsApp
-      if (c.includes("abrir whatsapp") || c.includes("abre o zap")) {
-        falarTexto("Abrindo o WhatsApp.");
-        window.open("whatsapp://", "_blank");
-        return;
-      }
-
-      // Controle de Lanterna
-      if (c.includes("ligar lanterna") || c.includes("acender lanterna")) {
-        const msg = await alternarLanterna(true);
-        falarTexto(msg);
-        return;
-      }
-      if (c.includes("desligar lanterna") || c.includes("apagar lanterna")) {
-        const msg = await alternarLanterna(false);
-        falarTexto(msg);
-        return;
-      }
-
-      // Sistema de Anotação Rápida
-      if (c.startsWith("anota") || c.startsWith("anote") || c.startsWith("salvar nota")) {
-        const nota = c.replace(/anota que|anotar que|anota|anote|salvar nota/g, '').trim();
-        if (nota) {
-          const notas = JSON.parse(localStorage.getItem(NOTAS_STORAGE)) || [];
-          notas.push(nota);
-          localStorage.setItem(NOTAS_STORAGE, JSON.stringify(notas));
-          falarTexto("Anotado no sistema, chefia!");
-          logDiv.textContent += `\n[NOTA SALVA]: ${nota}`;
-          return;
-        }
-      }
-
-      // Se não for comando de app nativo, delega para a API do Gemini
-      enviarParaIA(comando);
     }
 
     function iniciarEscuta() {
       escutaAtiva = true;
-      ativarWakeLock();
       btnModoVoz.textContent = '🟢 Escuta Ativa (Fale "Maninho")';
       btnModoVoz.classList.add('ativo');
       statusDiv.textContent = 'Status: Aguardando chamado...';
       ouuvindoLive.textContent = '';
-      cancelAnimationFrame(animationId);
-      desenharOnda(true, 0.4);
       try { recognition.start(); } catch(e){}
     }
 
@@ -598,27 +410,20 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
       escutaAtiva = false;
       aguardandoPergunta = false;
       processandoIA = false;
-      falandoAgora = false;
       clearTimeout(timerEnvio);
-      desativarWakeLock();
       btnModoVoz.textContent = '📡 Activar Escuta Viva-Voz';
       btnModoVoz.classList.remove('ativo');
       statusDiv.textContent = msg;
       ouuvindoLive.textContent = '';
-      cancelAnimationFrame(animationId);
-      desenharOnda(false);
       try { recognition.stop(); } catch(e){}
       window.speechSynthesis.cancel();
     }
 
     async function enviarParaIA(textoOuvido) {
       processandoIA = true;
-      statusDiv.textContent = 'Status: Processando...';
+      statusDiv.textContent = 'Status: Processando resposta...';
       ouuvindoLive.textContent = '';
       logDiv.textContent += `\n[VOCÊ]: ${textoOuvido}\n[ZOTOVV]: `;
-
-      cancelAnimationFrame(animationId);
-      desenharOnda(true, 1.2);
 
       await consultarGemini(textoOuvido);
 
@@ -656,11 +461,7 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
       }
 
       const chavePersonalidade = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
-      const promptPersonalidade = PROMPTS_PERSONALIDADE[chavePersonalidade] || PROMPTS_PERSONALIDADE.sarcastica;
-
-      // Injeção de contexto temporal e relógio em tempo real
-      const dataHoraAtual = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-      const systemInstructionCompleta = `${promptPersonalidade} [INFO: Hoje é ${dataHoraAtual} (Horário de Brasília). Responda sem Markdown ou listas.]`;
+      const promptPersonalidadeAtual = PROMPTS_PERSONALIDADE[chavePersonalidade] || PROMPTS_PERSONALIDADE.sarcastica;
 
       const contents = historicoConversa.map(item => ({
         role: item.role,
@@ -669,15 +470,14 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
 
       const payload = {
         systemInstruction: {
-          parts: [{ text: systemInstructionCompleta }]
+          parts: [{
+            text: promptPersonalidadeAtual
+          }]
         },
-        tools: [
-          { googleSearch: {} } // Grounding na Web nativo
-        ],
         contents: contents,
         generationConfig: {
-          maxOutputTokens: 500,
-          temperature: 0.7
+          maxOutputTokens: 600,
+          temperature: 0.8
         }
       };
 
@@ -713,9 +513,6 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
 
         if (!respostaFinal) throw new Error(ultimoErro || "Servidor indisponível.");
 
-        playBeep(520, 0.08, 'sine');
-        vibrar(30);
-
         logDiv.textContent += respostaFinal;
         historicoConversa.push({ role: "model", text: respostaFinal });
         localStorage.setItem("zotovv_memoria", JSON.stringify(historicoConversa));
@@ -734,8 +531,10 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
       const utterance = new SpeechSynthesisUtterance(texto);
       utterance.lang = 'pt-BR';
       if (vozFeminina) utterance.voice = vozFeminina;
-
+      
       const estiloAtual = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+      
+      // Ajuste dinâmico de tom e velocidade de acordo com o estilo
       if (estiloAtual === 'flerte') {
         utterance.rate = 1.05;
         utterance.pitch = 1.05;
@@ -750,23 +549,15 @@ Fale "Maninho", "Zotov" ou "Camarada"...</div>
         utterance.pitch = 1.1;
       }
 
-      utterance.onstart = () => {
-        falandoAgora = true;
-      };
-
       utterance.onend = () => {
         processandoIA = false;
-        falandoAgora = false;
         if (escutaAtiva) {
           statusDiv.textContent = 'Status: Aguardando chamado...';
-          cancelAnimationFrame(animationId);
-          desenharOnda(true, 0.4);
         }
       };
 
       utterance.onerror = () => {
         processandoIA = false;
-        falandoAgora = false;
       };
 
       window.speechSynthesis.speak(utterance);
