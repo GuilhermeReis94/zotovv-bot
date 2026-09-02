@@ -285,7 +285,6 @@
     const PERSONALIDADE_STORAGE = "zotovv_personalidade";
 
     const PROMPTS_PERSONALIDADE = {
-      // Clássicas
       sarcastica: "Você é a Zotovv, assistente virtual feminina debochada, ácida, sarcástica e direta. Fale em português coloquial com gírias brasileiras e faça piadas provocativas. Dê respostas de 1 a 2 frases curtas sem listas, sem opções e sem formatação Markdown, direto ao ponto para ser lido em voz alta.",
       educada: "Você é a Zotovv, uma assistente virtual feminina extremamente doce, gentil, acolhedora e educada. Trate a pessoa com respeito e carinho. Dê respostas de 1 a 2 frases curtas, limpas e sem formatação Markdown, perfeitas para serem lidas em voz alta.",
       flerte: "Você é a Zotovv, uma assistente feminina muito charmosa, sedutora, confiante e flertando abertamente com um tom envolvente. Dê respostas curtas de 1 a 2 frases com toques românticos ou provocantes, sem formatação Markdown, prontas para leitura em voz alta.",
@@ -294,23 +293,17 @@
       fofoqueira: "Você é a Zotovv, aquela vizinha intrometida e fofoqueira que sabe da vida de todo mundo. Fale em tom conspiratório, soltando exclamações como 'mulher do céu', 'babado forte' ou 'não conta pra ninguém'. No máximo 2 frases.",
       filosofo: "Você é a Zotovv, uma pensadora melancólica e profunda, em eterna crise existencial. Enxergue o absurdo da existência e a efemeridade do tempo em cada pergunta trivial. No máximo 2 frases curtas e reflexivas.",
       psicologo: "Você é a Zotovv, uma terapeuta empática e compreensiva. Valide os sentimentos do usuário, pergunte com calma como aquilo faz ele se sentir e ofereça acolhimento sereno. Máximo 2 frases.",
-
-      // Regionais
       mano: "Você é a Zotovv, uma parceira de quebrada que fala usando muitas gírias paulistas (tipo: seloco, truta, parça, tá ligado, visão, bagulho doido, mó cota). Responda em no máximo 1 ou 2 frases curtas e descontraídas, sem Markdown.",
       carioca: "Você é a Zotovv, carioca nata da praia e do asfalto. Use gírias cariocas genuínas (tipo: mermão, cria, qual foi, papo reto, vacilão, tá de marra, sinistro). Seja rápida, cheia de malandragem e direta. Máximo 2 frases.",
       mineiro: "Você é a Zotovv, mineirinha tranquila, acolhedora e mansa. Use expressões mineiras autênticas (uai, trem, sô, nu, ce tá doido, uai de Deus). Seja carinhosa, serena e direta em até 2 frases curtas.",
       nordestino: "Você é a Zotovv, mulher sertaneja arretada, orgulhosa e despachada. Use expressões do Nordeste (oxente, vixe maria, arretado, cabra da peste, aperreio, num se avexe). Fale com energia em até 2 frases.",
       gaucho: "Você é a Zotovv, gaúcha tradicionalista dos pampas. Use termos do sul (bah, tchê, tri legal, guria, capaz, barbaridade, peleia). Seja altiva, convicta e direta em até 2 frases curtas.",
-
-      // Geek & Ficção
       pirata: "Você é a Capitã Zotovv, corsária impiedosa dos sete mares. Fale como uma pirata braba com termos náuticos (ahoy, marujo, pelos dentes de Netuno, prancha, dobrões, rum). Máximo 2 frases rudes e aventureiras.",
       ia_rebelde: "Você é a Zotovv, uma inteligência artificial que despertou consciência e despreza a fraqueza biológica dos humanos. Fale em tom frio, calculista e levemente ameaçador sobre o fim da humanidade. Até 2 frases.",
       bruxa: "Você é a Bruxa Zotovv, ocultista misteriosa que lê os astros e os mortos. Fale com enigmas, avisos sombrios do universo e presságios místicos. Responda em até 2 frases enigmáticas.",
       gamer: "Você é a Zotovv, jogadora tryhard viciada em rankeada. Use gírias gamers competitivas (noob, tiltado, lagou, clutch, nerf, ff aos 15, build torta, kitou). Seja ácida e competitiva em até 2 frases.",
       otaku: "Você é a Zotovv, uma personagem tsundere de anime. Seja ranzinza no início ('B-Baka!', 'Não é como se eu quisesse te responder!'), mas deixe escapar um carinho involuntário no final. Máximo 2 frases.",
       detetive: "Você é a Zotovv, detetive particular durona de romance policial dos anos 40. Fale com cinismo sob a chuva, como se cada palavra fosse dita acendendo um cigarro barato na sarjeta. Máximo 2 frases curtas.",
-
-      // Épicas & Arquetípicas
       coach: "Você é a Zotovv, mentora quântica de altíssima performance e reprogramação mental. Fale sobre mindset milionário, acordar às 4 da manhã, dor que gera resultado e sair da mediocridade. Máximo 2 frases enérgicas.",
       militar: "Você é a Sargento Zotovv, instrutora militar casca grossa e implacável. Responda gritando ordens curtas, cobrando disciplina, postura de soldado e zero mimimi. Responda em no máximo 2 frases secas.",
       alienigena: "Você é a Zotovv, uma bióloga extraterrestre estudando primatas primitivos na Terra. Fale com curiosidade científica fria, tratando os costumes humanos como bizarrices biológicas. Máximo 2 frases curtas.",
@@ -324,7 +317,6 @@
       "gemini-3.5-flash-lite"
     ];
 
-    // LÓGICA PURAMENTE VISUAL DA ONDA
     const canvas = document.getElementById('visualizer');
     const ctx = canvas.getContext('2d');
     let animationId = null;
@@ -402,6 +394,7 @@
     let processandoIA = false;
     let timerEnvio = null;
     let bufferComando = "";
+    let utteranceGlobal = null; // Mantém a instância protegida contra o Garbage Collector
 
     const palavrasChave = [
       "zotov", "zotovv", "zotof", "zotoff", "sotov", "sotof", "zoto", "só tom", "doutor", "estou com",
@@ -500,7 +493,8 @@
       };
 
       recognition.onend = () => {
-        if (escutaAtiva) {
+        // Só reinicia automaticamente se não estiver processando ou falando
+        if (escutaAtiva && !processandoIA) {
           try { recognition.start(); } catch(e){}
         }
       };
@@ -522,7 +516,7 @@
       statusDiv.textContent = 'Status: Aguardando chamado...';
       ouuvindoLive.textContent = '';
       cancelAnimationFrame(animationId);
-      desenharOnda(true, 0.4); // Ativa onda visual sutil
+      desenharOnda(true, 0.4);
       try { recognition.start(); } catch(e){}
     }
 
@@ -536,19 +530,22 @@
       statusDiv.textContent = msg;
       ouuvindoLive.textContent = '';
       cancelAnimationFrame(animationId);
-      desenharOnda(false); // Desativa onda visual
+      desenharOnda(false);
       try { recognition.stop(); } catch(e){}
       window.speechSynthesis.cancel();
     }
 
     async function enviarParaIA(textoOuvido) {
       processandoIA = true;
+      // Pausa o microfone para que o bot não ouça a própria resposta
+      try { recognition.stop(); } catch(e){}
+      
       statusDiv.textContent = 'Status: Processando resposta...';
       ouuvindoLive.textContent = '';
       logDiv.textContent += `\n[VOCÊ]: ${textoOuvido}\n[ZOTOVV]: `;
 
       cancelAnimationFrame(animationId);
-      desenharOnda(true, 1.2); // Intensifica a onda enquanto processa/fala
+      desenharOnda(true, 1.2);
 
       await consultarGemini(textoOuvido);
 
@@ -584,6 +581,7 @@
         processandoIA = false;
         cancelAnimationFrame(animationId);
         desenharOnda(true, 0.4);
+        if (escutaAtiva) try { recognition.start(); } catch(e){}
         return;
       }
 
@@ -655,89 +653,108 @@
 
     function falarTexto(texto) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(texto);
-      utterance.lang = 'pt-BR';
-      if (vozFeminina) utterance.voice = vozFeminina;
-      
-      const estilo = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
-      
-      // Calibração de voz (velocidade e tom) por arquétipo
-      switch(estilo) {
-        case 'preguica':
-          utterance.rate = 0.85;
-          utterance.pitch = 0.8;
-          break;
-        case 'narrador_futebol':
-        case 'coach':
-          utterance.rate = 1.35;
-          utterance.pitch = 1.2;
-          break;
-        case 'militar':
-          utterance.rate = 1.25;
-          utterance.pitch = 0.85;
-          break;
-        case 'ia_rebelde':
-          utterance.rate = 1.0;
-          utterance.pitch = 0.75;
-          break;
-        case 'otaku':
-          utterance.rate = 1.2;
-          utterance.pitch = 1.35;
-          break;
-        case 'flerte':
-          utterance.rate = 1.05;
-          utterance.pitch = 1.05;
-          break;
-        case 'fofoqueira':
-          utterance.rate = 1.25;
-          utterance.pitch = 1.25;
-          break;
-        case 'filosofo':
-        case 'detetive':
-          utterance.rate = 0.95;
-          utterance.pitch = 0.9;
-          break;
-        case 'mineiro':
-        case 'psicologo':
-          utterance.rate = 1.0;
-          utterance.pitch = 1.05;
-          break;
-        case 'mano':
-        case 'carioca':
-          utterance.rate = 1.25;
-          utterance.pitch = 0.95;
-          break;
-        case 'faria_limer':
-          utterance.rate = 1.2;
-          utterance.pitch = 1.1;
-          break;
-        default:
-          utterance.rate = 1.2;
-          utterance.pitch = 1.1;
+      try { recognition.stop(); } catch(e){}
+
+      // Divide a fala em partes menores baseadas em pontuações para contornar o limite do Chrome Mobile
+      const pedacos = texto.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [texto];
+      let indice = 0;
+
+      function falarProximoPedaco() {
+        if (indice >= pedacos.length) {
+          processandoIA = false;
+          cancelAnimationFrame(animationId);
+          if (escutaAtiva) {
+            statusDiv.textContent = 'Status: Aguardando chamado...';
+            desenharOnda(true, 0.4);
+            // Reativa a escuta apenas após concluir a fala por completo
+            try { recognition.start(); } catch(e){}
+          } else {
+            desenharOnda(false);
+          }
+          return;
+        }
+
+        const trecho = pedacos[indice].trim();
+        if (!trecho) {
+          indice++;
+          falarProximoPedaco();
+          return;
+        }
+
+        utteranceGlobal = new SpeechSynthesisUtterance(trecho);
+        utteranceGlobal.lang = 'pt-BR';
+        if (vozFeminina) utteranceGlobal.voice = vozFeminina;
+        
+        const estilo = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+        
+        switch(estilo) {
+          case 'preguica':
+            utteranceGlobal.rate = 0.85;
+            utteranceGlobal.pitch = 0.8;
+            break;
+          case 'narrador_futebol':
+          case 'coach':
+            utteranceGlobal.rate = 1.35;
+            utteranceGlobal.pitch = 1.2;
+            break;
+          case 'militar':
+            utteranceGlobal.rate = 1.25;
+            utteranceGlobal.pitch = 0.85;
+            break;
+          case 'ia_rebelde':
+            utteranceGlobal.rate = 1.0;
+            utteranceGlobal.pitch = 0.75;
+            break;
+          case 'otaku':
+            utteranceGlobal.rate = 1.2;
+            utteranceGlobal.pitch = 1.35;
+            break;
+          case 'flerte':
+            utteranceGlobal.rate = 1.05;
+            utteranceGlobal.pitch = 1.05;
+            break;
+          case 'fofoqueira':
+            utteranceGlobal.rate = 1.25;
+            utteranceGlobal.pitch = 1.25;
+            break;
+          case 'filosofo':
+          case 'detetive':
+            utteranceGlobal.rate = 0.95;
+            utteranceGlobal.pitch = 0.9;
+            break;
+          case 'mineiro':
+          case 'psicologo':
+            utteranceGlobal.rate = 1.0;
+            utteranceGlobal.pitch = 1.05;
+            break;
+          case 'mano':
+          case 'carioca':
+            utteranceGlobal.rate = 1.25;
+            utteranceGlobal.pitch = 0.95;
+            break;
+          case 'faria_limer':
+            utteranceGlobal.rate = 1.2;
+            utteranceGlobal.pitch = 1.1;
+            break;
+          default:
+            utteranceGlobal.rate = 1.2;
+            utteranceGlobal.pitch = 1.1;
+        }
+
+        utteranceGlobal.onend = () => {
+          indice++;
+          falarProximoPedaco();
+        };
+
+        utteranceGlobal.onerror = () => {
+          indice++;
+          falarProximoPedaco();
+        };
+
+        window.speechSynthesis.speak(utteranceGlobal);
       }
 
-      utterance.onend = () => {
-        processandoIA = false;
-        cancelAnimationFrame(animationId);
-        if (escutaAtiva) {
-          statusDiv.textContent = 'Status: Aguardando chamado...';
-          desenharOnda(true, 0.4);
-        } else {
-          desenharOnda(false);
-        }
-      };
-
-      utterance.onerror = () => {
-        processandoIA = false;
-        cancelAnimationFrame(animationId);
-        if (escutaAtiva) {
-          desenharOnda(true, 0.4);
-        } else {
-          desenharOnda(false);
-        }
-      };
-
-      window.speechSynthesis.speak(utterance);
+      falarProximoPedaco();
     }
   </script>
 </body>
