@@ -173,19 +173,21 @@
   <div id="log">Fale "Zotov", "Camarada", "Maninho" ou "Meu rei" para acionar a Zotovv...</div>
 
   <script>
-    const CHAVE_PADRAO = "AQ.Ab8RN6JQEhCthvftf0nqeQymEpX14xNRVQatFFAm7caWuIV8ZQ";
     const GEMINI_API_KEY_STORAGE = "zotovv_gemini_api_key";
     
     const MODELOS_DISPONIVEIS = [
-      "gemini-3.5-flash",
-      "gemini-3.5-flash-lite"
+      "gemini-2.5-flash",
+      "gemini-2.5-flash-lite"
     ];
 
     function obterChaveGemini() {
       let chave = localStorage.getItem(GEMINI_API_KEY_STORAGE);
       if (!chave || !chave.trim()) {
-        chave = CHAVE_PADRAO;
-        localStorage.setItem(GEMINI_API_KEY_STORAGE, chave);
+        chave = prompt("Cole sua chave Gemini (iniciada em AIzaSy...):");
+        if (chave && chave.trim()) {
+          chave = chave.trim();
+          localStorage.setItem(GEMINI_API_KEY_STORAGE, chave);
+        }
       }
       return chave;
     }
@@ -200,16 +202,15 @@
     let historicoConversa = JSON.parse(localStorage.getItem('zotovv_memoria')) || [];
     historicoConversa = historicoConversa
       .filter(item => item && (item.role === "user" || item.role === "model"))
-      .map(item => ({
-        role: item.role,
-        text: item.text || ""
-      }))
+      .map(item => ({ role: item.role, text: item.text || "" }))
       .filter(item => item.text);
 
     let vozFeminina = null;
     let escutaAtiva = false;
     let aguardandoPergunta = false;
     let processandoIA = false;
+    let timerEnvio = null;
+    let bufferComando = "";
 
     const palavrasChave = [
       "zotov", "zotovv", "zotof", "zotoff", "sotov", "sotof", "zoto", "só tom", "doutor", "estou com",
@@ -221,16 +222,16 @@
     btnLimparMemoria.addEventListener('click', () => {
       localStorage.removeItem('zotovv_memoria');
       historicoConversa = [];
-      logDiv.textContent = 'Memória do Zotovv resetada com sucesso!';
+      logDiv.textContent = 'Memória resetada com sucesso!';
       falarTexto('Memória apagada, maninho.');
     });
 
     btnTrocarChave.addEventListener('click', () => {
-      const chaveAtual = localStorage.getItem(GEMINI_API_KEY_STORAGE) || CHAVE_PADRAO;
-      const novaChave = prompt("Cole a nova chave da API Gemini:", chaveAtual);
+      const chaveAtual = localStorage.getItem(GEMINI_API_KEY_STORAGE) || "";
+      const novaChave = prompt("Cole sua chave Gemini (iniciada em AIzaSy...):", chaveAtual);
       if (novaChave && novaChave.trim()) {
         localStorage.setItem(GEMINI_API_KEY_STORAGE, novaChave.trim());
-        logDiv.textContent = "Chave da API Gemini atualizada com sucesso!";
+        logDiv.textContent = "Chave atualizada com sucesso!";
         falarTexto("Chave atualizada, maninho.");
       }
     });
@@ -252,7 +253,7 @@
     let recognition = null;
 
     if (!SpeechRecognition) {
-      alert('Reconhecimento de voz não suportado neste navegador. Utilize o Chrome no Android.');
+      alert('Reconhecimento de voz não suportado neste navegador. Use o Chrome.');
     } else {
       recognition = new SpeechRecognition();
       recognition.lang = 'pt-BR';
@@ -267,35 +268,45 @@
         }
       });
 
-      recognition.onresult = async (event) => {
+      recognition.onresult = (event) => {
         if (!escutaAtiva || processandoIA) return;
 
+        let transcriptCompleto = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript.toLowerCase().trim();
-          const eFinal = event.results[i].isFinal;
+          transcriptCompleto += event.results[i][0].transcript.toLowerCase();
+        }
+        transcriptCompleto = transcriptCompleto.trim();
 
-          ouuvindoLive.textContent = `[Ouvi]: "${transcript}"`;
+        ouuvindoLive.textContent = `[Ouvi]: "${transcriptCompleto}"`;
 
-          if (!aguardandoPergunta) {
-            const detectouGatilho = palavrasChave.some(p => transcript.includes(p));
+        if (!aguardandoPergunta) {
+          const detectouGatilho = palavrasChave.some(p => transcriptCompleto.includes(p));
 
-            if (detectouGatilho) {
-              aguardandoPergunta = true;
-              window.speechSynthesis.cancel();
-              statusDiv.textContent = 'Status: 👂 Chamado detectado! Fale...';
-              ouuvindoLive.textContent = 'PRONTO PARA O COMANDO...';
+          if (detectouGatilho) {
+            aguardandoPergunta = true;
+            window.speechSynthesis.cancel();
+            statusDiv.textContent = 'Status: 👂 Chamado detectado! Pode falar...';
+            
+            // Remove o gatilho inicial para isolar o que foi dito junto
+            let fraseRestante = transcriptCompleto;
+            palavrasChave.forEach(p => { fraseRestante = fraseRestante.replace(p, ''); });
+            bufferComando = fraseRestante.trim();
 
-              let textoFrase = transcript;
-              palavrasChave.forEach(p => textoFrase = textoFrase.replace(p, ''));
-              textoFrase = textoFrase.trim();
-
-              if (textoFrase.length > 2 && eFinal) {
-                enviarParaIA(textoFrase);
-              }
+            // Aguarda 1,2s de silêncio para dar tempo de terminar a frase no celular
+            clearTimeout(timerEnvio);
+            if (bufferComando.length > 2) {
+              timerEnvio = setTimeout(() => dispararComando(), 1200);
             }
-          } 
-          else if (eFinal && transcript.length > 2) {
-            enviarParaIA(transcript);
+          }
+        } else {
+          // Se já está ouvindo o comando, acumula o texto falado
+          let fraseRestante = transcriptCompleto;
+          palavrasChave.forEach(p => { fraseRestante = fraseRestante.replace(p, ''); });
+          bufferComando = fraseRestante.trim();
+
+          clearTimeout(timerEnvio);
+          if (bufferComando.length > 2) {
+            timerEnvio = setTimeout(() => dispararComando(), 1200);
           }
         }
       };
@@ -305,6 +316,15 @@
           try { recognition.start(); } catch(e){}
         }
       };
+    }
+
+    function dispararComando() {
+      if (bufferComando && bufferComando.length > 2) {
+        const textoParaEnviar = bufferComando;
+        bufferComando = "";
+        aguardandoPergunta = false;
+        enviarParaIA(textoParaEnviar);
+      }
     }
 
     function iniciarEscuta() {
@@ -320,6 +340,7 @@
       escutaAtiva = false;
       aguardandoPergunta = false;
       processandoIA = false;
+      clearTimeout(timerEnvio);
       btnModoVoz.textContent = '📡 Activar Escuta Viva-Voz';
       btnModoVoz.classList.remove('ativo');
       statusDiv.textContent = msg;
@@ -330,8 +351,7 @@
 
     async function enviarParaIA(textoOuvido) {
       processandoIA = true;
-      aguardandoPergunta = false;
-      statusDiv.textContent = 'Status: Processando...';
+      statusDiv.textContent = 'Status: Processando resposta...';
       ouuvindoLive.textContent = '';
       logDiv.textContent += `\n[VOCÊ]: ${textoOuvido}\n[ZOTOVV]: `;
 
@@ -342,18 +362,12 @@
     }
 
     async function fazerRequisicaoModelo(modelo, apiKey, payload) {
-      // URL limpa, sem expor a chave na rota
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`;
-      
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${apiKey}`;
       const response = await fetch(url, {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey // O cabeçalho que o padrão AQ. exige!
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
-      
       const data = await response.json();
       return { ok: response.ok, status: response.status, data };
     }
@@ -370,6 +384,12 @@
       historicoConversa.push({ role: "user", text: promptText });
 
       const apiKey = obterChaveGemini();
+      if (!apiKey) {
+        logDiv.textContent += "Chave não configurada.";
+        processandoIA = false;
+        return;
+      }
+
       const contents = historicoConversa.map(item => ({
         role: item.role,
         parts: [{ text: item.text }]
@@ -383,7 +403,7 @@
         },
         contents: contents,
         generationConfig: {
-          maxOutputTokens: 1000,
+          maxOutputTokens: 600,
           temperature: 0.8
         }
       };
@@ -397,22 +417,18 @@
             const res = await fazerRequisicaoModelo(modelo, apiKey, payload);
 
             if (res.ok) {
-              const candidate = res.data.candidates?.[0];
-              const parts = candidate?.content?.parts;
-              
+              const parts = res.data.candidates?.[0]?.content?.parts;
               if (parts && parts.length > 0) {
                 respostaFinal = parts
                   .map(p => p.text || '')
                   .join('')
                   .replace(/[*_#`~]/g, '')
                   .trim();
-                
                 if (respostaFinal) break;
               }
             }
 
             ultimoErro = res.data?.error?.message || `HTTP ${res.status}`;
-            
             if (res.status === 503 || res.status === 429) {
               await new Promise(r => setTimeout(r, 1000));
             } else {
@@ -422,9 +438,7 @@
           if (respostaFinal) break;
         }
 
-        if (!respostaFinal) {
-          throw new Error(ultimoErro || "Servidores do Gemini indisponíveis.");
-        }
+        if (!respostaFinal) throw new Error(ultimoErro || "Servidor indisponível.");
 
         logDiv.textContent += respostaFinal;
         historicoConversa.push({ role: "model", text: respostaFinal });
@@ -432,11 +446,10 @@
         falarTexto(respostaFinal);
 
       } catch (err) {
-        console.error("Falha na API Gemini:", err);
         historicoConversa.pop();
         const msgErro = `Deu ruim no Gemini, maninho: ${err.message}`;
         logDiv.textContent += `\n${msgErro}`;
-        falarTexto("Deu uma engasgada aqui na resposta, fala de novo!");
+        falarTexto("Deu uma engasgada na conexão, tenta de novo!");
       }
     }
 
