@@ -596,13 +596,13 @@
       const payload = {
         systemInstruction: {
           parts: [{
-            text: promptPersonalidadeAtual
+            text: `${promptPersonalidadeAtual} IMPORTANTE: Nunca divida a resposta, nunca gere raciocínio interno ou metadados, entregue o texto pronto do início ao fim em até 2 frases.`
           }]
         },
         contents: contents,
         generationConfig: {
-          maxOutputTokens: 600,
-          temperature: 0.8
+          maxOutputTokens: 1200,
+          temperature: 0.7
         }
       };
 
@@ -615,14 +615,21 @@
             const res = await fazerRequisicaoModelo(modelo, apiKey, payload);
 
             if (res.ok) {
-              const parts = res.data.candidates?.[0]?.content?.parts;
-              if (parts && parts.length > 0) {
-                respostaFinal = parts
-                  .map(p => p.text || '')
-                  .join('')
+              const candidate = res.data.candidates?.[0];
+              const parts = candidate?.content?.parts || [];
+              
+              // Filtra apenas partes de texto real que NÃO sejam pensamento interno
+              const partesTexto = parts
+                .filter(p => p.text && !p.thought)
+                .map(p => p.text)
+                .join(' ');
+
+              if (partesTexto.trim()) {
+                respostaFinal = partesTexto
                   .replace(/[*_#`~]/g, '')
+                  .replace(/\s+/g, ' ')
                   .trim();
-                if (respostaFinal) break;
+                break;
               }
             }
 
