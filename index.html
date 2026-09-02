@@ -51,9 +51,47 @@
       color: #ffd700;
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin: 4px 0 16px 0;
+      margin: 4px 0 12px 0;
       font-size: clamp(20px, 5vw, 24px);
       text-shadow: 2px 2px 0px #000;
+    }
+
+    .personality-box {
+      margin-bottom: 14px;
+      text-align: left;
+      background: #181818;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #444;
+    }
+
+    .personality-box label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      color: #ffd700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .personality-select {
+      width: 100%;
+      height: 42px;
+      background-color: #242424;
+      color: #fff;
+      border: 1px solid #ffd700;
+      border-radius: 4px;
+      padding: 0 10px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .personality-select:focus {
+      border-color: #ff4d4d;
+      box-shadow: 0 0 8px rgba(255, 77, 77, 0.5);
     }
 
     .btn-container {
@@ -142,7 +180,7 @@
       white-space: pre-wrap;
       word-break: break-word;
       min-height: 160px;
-      max-height: 40dvh;
+      max-height: 36dvh;
       overflow-y: auto;
       border: 1px solid #770000;
       color: #dcdcdc;
@@ -160,6 +198,18 @@
   <div class="banner">★ Unidade de Inteligência de Voz v3 ★</div>
   <h2>Zotovv Voice Bot ☭</h2>
 
+  <div class="personality-box">
+    <label for="selectPersonalidade">🎭 Personalidade da Zotovv:</label>
+    <select id="selectPersonalidade" class="personality-select">
+      <option value="sarcastica">🔥 Sarcástica & Ácida (Padrão)</option>
+      <option value="educada">🌸 Educada, Doce & Gentil</option>
+      <option value="flerte">💋 Charmosa & Flertando</option>
+      <option value="formal">👔 Super Formal & Executiva</option>
+      <option value="mano">🧢 Gírias de Quebrada / Mano</option>
+      <option value="sovietica">☭ Camarada Soviética Rígida</option>
+    </select>
+  </div>
+
   <div class="btn-container">
     <button id="btnModoVoz">📡 Activar Escuta Viva-Voz</button>
     <div class="btn-aux-group">
@@ -174,6 +224,16 @@
 
   <script>
     const GEMINI_API_KEY_STORAGE = "zotovv_gemini_api_key";
+    const PERSONALIDADE_STORAGE = "zotovv_personalidade";
+
+    const PROMPTS_PERSONALIDADE = {
+      sarcastica: "Você é a Zotovv, assistente virtual feminina debochada, ácida, sarcástica e direta. Fale em português coloquial com gírias brasileiras e faça piadas provocativas. Dê respostas de 1 a 2 frases curtas sem listas, sem opções e sem formatação Markdown, direto ao ponto para ser lido em voz alta.",
+      educada: "Você é a Zotovv, uma assistente virtual feminina extremamente doce, gentil, acolhedora e educada. Trate a pessoa com respeito e carinho. Dê respostas de 1 a 2 frases curtas, limpas e sem formatação Markdown, perfeitas para serem lidas em voz alta.",
+      flerte: "Você é a Zotovv, uma assistente feminina muito charmosa, sedutora, confiante e flertando abertamente com um tom envolvente. Dê respostas curtas de 1 a 2 frases com toques românticos ou provocantes, sem formatação Markdown, prontas para leitura em voz alta.",
+      formal: "Você é a Zotovv, uma inteligência artificial corporativa de alto escalão. Utilize vocabulário erudito, extrema formalidade, elegância e tratamento cerimonioso. Responda em no máximo 2 frases concisas e diretas sem listas ou símbolos Markdown.",
+      mano: "Você é a Zotovv, uma parceira de quebrada que fala pesado usando gírias paulistas e cariocas (tipo: seloco, truta, parça, tá ligado, visão, bagulho doido). Responda em no máximo 1 ou 2 frases curtas e descontraídas, sem Markdown.",
+      sovietica: "Você é a Zotovv, uma comandante de inteligência soviética rígida e disciplinada. Trate o interlocutor como 'camarada' e foque no cumprimento do dever e na glória do coletivo. Dê respostas curtas de 1 a 2 frases sem formatação Markdown."
+    };
     
     const MODELOS_DISPONIVEIS = [
       "gemini-3.5-flash",
@@ -192,12 +252,25 @@
       return chave;
     }
 
+    const selectPersonalidade = document.getElementById('selectPersonalidade');
     const btnModoVoz = document.getElementById('btnModoVoz');
     const btnLimparMemoria = document.getElementById('btnLimparMemoria');
     const btnTrocarChave = document.getElementById('btnTrocarChave');
     const statusDiv = document.getElementById('status');
     const ouuvindoLive = document.getElementById('ouuvindoLive');
     const logDiv = document.getElementById('log');
+
+    // Recupera a personalidade salva ou usa a padrão
+    const personalidadeSalva = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+    selectPersonalidade.value = personalidadeSalva;
+
+    selectPersonalidade.addEventListener('change', (e) => {
+      const novaPersonalidade = e.target.value;
+      localStorage.setItem(PERSONALIDADE_STORAGE, novaPersonalidade);
+      logDiv.textContent += `\n[SISTEMA]: Personalidade alterada para: ${e.target.options[e.target.selectedIndex].text}`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+      falarTexto("Personalidade atualizada.");
+    });
 
     let historicoConversa = JSON.parse(localStorage.getItem('zotovv_memoria')) || [];
     historicoConversa = historicoConversa
@@ -223,7 +296,7 @@
       localStorage.removeItem('zotovv_memoria');
       historicoConversa = [];
       logDiv.textContent = 'Memória resetada com sucesso!';
-      falarTexto('Memória apagada, maninho.');
+      falarTexto('Memória apagada, chefia.');
     });
 
     btnTrocarChave.addEventListener('click', () => {
@@ -232,7 +305,7 @@
       if (novaChave && novaChave.trim()) {
         localStorage.setItem(GEMINI_API_KEY_STORAGE, novaChave.trim());
         logDiv.textContent = "Chave atualizada com sucesso!";
-        falarTexto("Chave atualizada, maninho.");
+        falarTexto("Chave atualizada.");
       }
     });
 
@@ -253,7 +326,7 @@
     let recognition = null;
 
     if (!SpeechRecognition) {
-      alert('Reconhecimento de voz não suportado neste navegador. Use o Chrome.');
+      alert('Reconhecimento de voz não suportado neste navegador. Utilize o Chrome.');
     } else {
       recognition = new SpeechRecognition();
       recognition.lang = 'pt-BR';
@@ -287,19 +360,16 @@
             window.speechSynthesis.cancel();
             statusDiv.textContent = 'Status: 👂 Chamado detectado! Pode falar...';
             
-            // Remove o gatilho inicial para isolar o que foi dito junto
             let fraseRestante = transcriptCompleto;
             palavrasChave.forEach(p => { fraseRestante = fraseRestante.replace(p, ''); });
             bufferComando = fraseRestante.trim();
 
-            // Aguarda 1,2s de silêncio para dar tempo de terminar a frase no celular
             clearTimeout(timerEnvio);
             if (bufferComando.length > 2) {
               timerEnvio = setTimeout(() => dispararComando(), 1200);
             }
           }
         } else {
-          // Se já está ouvindo o comando, acumula o texto falado
           let fraseRestante = transcriptCompleto;
           palavrasChave.forEach(p => { fraseRestante = fraseRestante.replace(p, ''); });
           bufferComando = fraseRestante.trim();
@@ -390,6 +460,9 @@
         return;
       }
 
+      const chavePersonalidade = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+      const promptPersonalidadeAtual = PROMPTS_PERSONALIDADE[chavePersonalidade] || PROMPTS_PERSONALIDADE.sarcastica;
+
       const contents = historicoConversa.map(item => ({
         role: item.role,
         parts: [{ text: item.text }]
@@ -398,7 +471,7 @@
       const payload = {
         systemInstruction: {
           parts: [{
-            text: "Você é a Zotovv, assistente virtual feminina debochada, ácida, sarcástica e direta. Fale em português coloquial com gírias brasileiras. Dê respostas de 1 a 2 frases curtas sem listas, sem opções e sem formatação Markdown, direto ao ponto para ser lido em voz alta."
+            text: promptPersonalidadeAtual
           }]
         },
         contents: contents,
@@ -447,7 +520,7 @@
 
       } catch (err) {
         historicoConversa.pop();
-        const msgErro = `Deu ruim no Gemini, maninho: ${err.message}`;
+        const msgErro = `Deu ruim no Gemini: ${err.message}`;
         logDiv.textContent += `\n${msgErro}`;
         falarTexto("Deu uma engasgada na conexão, tenta de novo!");
       }
@@ -458,8 +531,23 @@
       const utterance = new SpeechSynthesisUtterance(texto);
       utterance.lang = 'pt-BR';
       if (vozFeminina) utterance.voice = vozFeminina;
-      utterance.rate = 1.2;
-      utterance.pitch = 1.1;
+      
+      const estiloAtual = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+      
+      // Ajuste dinâmico de tom e velocidade de acordo com o estilo
+      if (estiloAtual === 'flerte') {
+        utterance.rate = 1.05;
+        utterance.pitch = 1.05;
+      } else if (estiloAtual === 'mano') {
+        utterance.rate = 1.25;
+        utterance.pitch = 0.95;
+      } else if (estiloAtual === 'formal') {
+        utterance.rate = 1.1;
+        utterance.pitch = 1.0;
+      } else {
+        utterance.rate = 1.2;
+        utterance.pitch = 1.1;
+      }
 
       utterance.onend = () => {
         processandoIA = false;
