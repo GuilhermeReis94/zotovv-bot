@@ -1,0 +1,18 @@
+{
+  "name": "Zotovv Voice Bot ☭",
+  "short_name": "Zotovv",
+  "description": "Assistente de voz inteligente Zotovv v3",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0f0f",
+  "theme_color": "#8b0000",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
