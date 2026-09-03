@@ -226,8 +226,12 @@
   <div class="personality-box">
     <label for="selectPersonalidade">🎭 Personalidade da Zotovv:</label>
     <select id="selectPersonalidade" class="personality-select">
+      <optgroup label="🤖 Padrão do Chat">
+        <option value="padrao" selected>Gemini Padrão (Sem Personagem)</option>
+      </optgroup>
+
       <optgroup label="🔥 Clássicas & Humor">
-        <option value="sarcastica">Sarcástica & Ácida (Padrão)</option>
+        <option value="sarcastica">Sarcástica & Ácida</option>
         <option value="educada">Educada, Doce & Gentil</option>
         <option value="flerte">Charmosa & Flertando</option>
         <option value="formal">Super Formal & Executiva</option>
@@ -285,6 +289,7 @@
     const PERSONALIDADE_STORAGE = "zotovv_personalidade";
 
     const PROMPTS_PERSONALIDADE = {
+      padrao: "Você é um assistente virtual prestativo, natural, amigável e direto ao ponto. Responda em português de forma clara, sem encenar personagens, sem gírias forçadas e sem formatação Markdown. Dê respostas curtas de no máximo 2 frases para leitura em voz alta.",
       sarcastica: "Você é a Zotovv, assistente virtual feminina debochada, ácida, sarcástica e direta. Fale em português coloquial com gírias brasileiras e faça piadas provocativas. Dê respostas de 1 a 2 frases curtas sem listas, sem opções e sem formatação Markdown, direto ao ponto para ser lido em voz alta.",
       educada: "Você é a Zotovv, uma assistente virtual feminina extremamente doce, gentil, acolhedora e educada. Trate a pessoa com respeito e carinho. Dê respostas de 1 a 2 frases curtas, limpas e sem formatação Markdown, perfeitas para serem lidas em voz alta.",
       flerte: "Você é a Zotovv, uma assistente feminina muito charmosa, sedutora, confiante e flertando abertamente com um tom envolvente. Dê respostas curtas de 1 a 2 frases com toques românticos ou provocantes, sem formatação Markdown, prontas para leitura em voz alta.",
@@ -371,7 +376,7 @@
     const ouuvindoLive = document.getElementById('ouuvindoLive');
     const logDiv = document.getElementById('log');
 
-    const personalidadeSalva = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+    const personalidadeSalva = localStorage.getItem(PERSONALIDADE_STORAGE) || 'padrao';
     selectPersonalidade.value = personalidadeSalva;
 
     selectPersonalidade.addEventListener('change', (e) => {
@@ -394,7 +399,7 @@
     let processandoIA = false;
     let timerEnvio = null;
     let bufferComando = "";
-    let utteranceGlobal = null; // Mantém a instância protegida contra o Garbage Collector
+    let utteranceGlobal = null;
 
     const palavrasChave = [
       "zotov", "zotovv", "zotof", "zotoff", "sotov", "sotof", "zoto", "só tom", "doutor", "estou com",
@@ -493,7 +498,6 @@
       };
 
       recognition.onend = () => {
-        // Só reinicia automaticamente se não estiver processando ou falando
         if (escutaAtiva && !processandoIA) {
           try { recognition.start(); } catch(e){}
         }
@@ -537,7 +541,6 @@
 
     async function enviarParaIA(textoOuvido) {
       processandoIA = true;
-      // Pausa o microfone para que o bot não ouça a própria resposta
       try { recognition.stop(); } catch(e){}
       
       statusDiv.textContent = 'Status: Processando resposta...';
@@ -585,8 +588,8 @@
         return;
       }
 
-      const chavePersonalidade = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
-      const promptPersonalidadeAtual = PROMPTS_PERSONALIDADE[chavePersonalidade] || PROMPTS_PERSONALIDADE.sarcastica;
+      const chavePersonalidade = localStorage.getItem(PERSONALIDADE_STORAGE) || 'padrao';
+      const promptPersonalidadeAtual = PROMPTS_PERSONALIDADE[chavePersonalidade] || PROMPTS_PERSONALIDADE.padrao;
 
       const contents = historicoConversa.map(item => ({
         role: item.role,
@@ -618,7 +621,6 @@
               const candidate = res.data.candidates?.[0];
               const parts = candidate?.content?.parts || [];
               
-              // Filtra apenas partes de texto real que NÃO sejam pensamento interno
               const partesTexto = parts
                 .filter(p => p.text && !p.thought)
                 .map(p => p.text)
@@ -662,7 +664,6 @@
       window.speechSynthesis.cancel();
       try { recognition.stop(); } catch(e){}
 
-      // Divide a fala em partes menores baseadas em pontuações para contornar o limite do Chrome Mobile
       const pedacos = texto.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [texto];
       let indice = 0;
 
@@ -673,7 +674,6 @@
           if (escutaAtiva) {
             statusDiv.textContent = 'Status: Aguardando chamado...';
             desenharOnda(true, 0.4);
-            // Reativa a escuta apenas após concluir a fala por completo
             try { recognition.start(); } catch(e){}
           } else {
             desenharOnda(false);
@@ -692,9 +692,13 @@
         utteranceGlobal.lang = 'pt-BR';
         if (vozFeminina) utteranceGlobal.voice = vozFeminina;
         
-        const estilo = localStorage.getItem(PERSONALIDADE_STORAGE) || 'sarcastica';
+        const estilo = localStorage.getItem(PERSONALIDADE_STORAGE) || 'padrao';
         
         switch(estilo) {
+          case 'padrao':
+            utteranceGlobal.rate = 1.1;
+            utteranceGlobal.pitch = 1.0;
+            break;
           case 'preguica':
             utteranceGlobal.rate = 0.85;
             utteranceGlobal.pitch = 0.8;
@@ -744,8 +748,8 @@
             utteranceGlobal.pitch = 1.1;
             break;
           default:
-            utteranceGlobal.rate = 1.2;
-            utteranceGlobal.pitch = 1.1;
+            utteranceGlobal.rate = 1.1;
+            utteranceGlobal.pitch = 1.0;
         }
 
         utteranceGlobal.onend = () => {
